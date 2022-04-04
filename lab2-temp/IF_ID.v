@@ -29,7 +29,8 @@ input [31:0] PC_in,
 input [31:0] inst_in,
 output reg [31:0] PC_out,
 output reg [31:0] inst_out,
-output reg PC_lock
+output reg PC_lock,
+output reg inst_valid
     );
 
 reg [31:0] StallCounter, PClockCounter;
@@ -40,6 +41,7 @@ begin
     begin
         PC_out <= 32'b0;
         inst_out <= 32'b0;
+        inst_valid <= 1'b0;
         StallCounter <= 32'b0;
         PClockCounter <= 32'b0;
         PC_lock <= 1'b0;
@@ -49,12 +51,14 @@ begin
     begin
         PC_out <= 32'b0;
         inst_out <= 32'h00000013;
+        inst_valid <= 1'b0;
     end
     
     else if(ControlChange)
     begin
         PC_out <= 32'b0;
         inst_out <= 32'h00000013;
+        inst_valid <= 1'b0;
         PC_lock <= 1'b0;
         StallCounter <= StallCounter;
         PClockCounter <= PClockCounter;
@@ -66,12 +70,14 @@ begin
         begin
             PC_out <= 32'b0;
             inst_out <= 32'h00000013;
+            inst_valid <= 1'b0;
             StallCounter <= StallCounter - 32'b1;
         end
         else
         begin
             PC_out <= PC_in;
             inst_out <= inst_in;
+            inst_valid <= 1'b1;
             StallCounter <= StallCounter;
         end
         
@@ -94,6 +100,7 @@ begin
         PClockCounter <= 32'h0;
         StallCounter <= 32'h1;
         inst_out <= inst_in;
+        inst_valid <= 1'b1;
         PC_out <= PC_in;
     end
     
@@ -106,6 +113,7 @@ begin
                 PClockCounter <= 32'h0;
                 StallCounter <= 32'h1;
                 inst_out <= inst_in;
+                inst_valid <= 1'b1;
                 PC_out <= PC_in;
             end
             
@@ -115,6 +123,7 @@ begin
                 PClockCounter <= 32'h0;
                 StallCounter <= 32'h1;
                 inst_out <= inst_in;
+                inst_valid <= 1'b1;
                 PC_out <= PC_in;
             end
             
@@ -124,6 +133,7 @@ begin
                 PClockCounter <= 32'h0;
                 StallCounter <= 32'h1;
                 inst_out <= inst_in;
+                inst_valid <= 1'b1;
                 PC_out <= PC_in;
             end
             
@@ -133,6 +143,7 @@ begin
                 PClockCounter <= 32'h0;
                 StallCounter <= 32'h1;
                 inst_out <= inst_in;
+                inst_valid <= 1'b1;
                 PC_out <= PC_in;
             end
             
@@ -142,6 +153,7 @@ begin
                 PClockCounter <= 32'h0;
                 StallCounter <= 32'h0;
                 inst_out <= inst_in;
+                inst_valid <= 1'b1;
                 PC_out <= PC_in;
             end
         endcase

@@ -23,6 +23,7 @@
 module ID_EX(
 input clk,
 input rst,
+input IF_ID_inst_valid,
 input D_cache_stall,
 input [31:0] PC_in,
 input [31:0] imm_in,
@@ -109,7 +110,7 @@ begin
         mem_access_valid <= 1'b0;
     end
     
-    else if(D_cache_stall)
+    else if(D_cache_stall && !IF_ID_inst_valid)
     begin
         PC <= PC;
         imm <= imm;

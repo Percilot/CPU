@@ -114,6 +114,7 @@ wire [1:0] Control_CSR_HowToWriteCSR;
 wire [1:0] ID_EX_CSR_HowToWriteCSR;
 wire Control_mem_access_valid;
 wire ID_EX_mem_access_valid;
+wire IF_ID_inst_valid;
 
 ForwardingRegs ForwardingEX_MEM(
 .EX_MEM_RegWrite(EX_MEM_RegWrite),
@@ -143,12 +144,14 @@ IF_ID SegmentReg1(
 .inst_in(inst_in),
 .PC_out(IF_ID_PC),
 .inst_out(IF_ID_Inst),
-.PC_lock(PC_lock)
+.PC_lock(PC_lock),
+.inst_valid(IF_ID_inst_valid)
 );
 
 ID_EX SegmentReg2(
 .clk(clk),
 .rst(rst),
+.IF_ID_inst_valid(IF_ID_inst_valid),
 .D_cache_stall(D_cache_stall),
 .PC_in(IF_ID_PC),
 .imm_in(Inst_Imm),
