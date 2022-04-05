@@ -42,10 +42,15 @@ module Core(
     reg  [31:0] clk_div;
 
     wire pipeline_access_memory_valid;
-    wire [31:0] D_Cache_ram_addr, D_Cache_ram_data, Bram_data;
-    wire D_cache_stall, D_Cache_ram_write, Bram_valid, D_Cache_ram_valid;
-    wire [31:0] bram_ram_addr, bram_ram_data, ram_data, bram_data;
+    wire [31:0] D_Cache_ram_addr, D_Cache_ram_data;
+    wire D_cache_stall, D_Cache_ram_write, D_Cache_ram_valid;
+    wire [31:0] bram_ram_addr, bram_ram_data, ram_data;
     wire bram_valid, bram_ram_write;
+    
+    wire [31:0] I_Cache_rom_addr;
+    wire I_cache_stall, I_Cache_rom_valid;
+    wire [31:0] brom_rom_addr, rom_data;
+    wire brom_valid;
     assign rst = ~aresetn;
 
     SCPU cpu(
@@ -69,19 +74,52 @@ module Core(
     assign mem_clk = ~clk_div[3]; // 50mhz
     assign cpu_clk = debug_mode ? clk_div[0] : step;
     
-    // TODO: 连接Instruction Memory
-    Rom rom_unit (
-        .a(pc_out),  // 地址输入
-        .spo(inst) // 读数据输�?
+    Inst_Ram Inst_Ram (
+        .clka(mem_clk),  // 时钟
+        .wea(1'b0),   // 是否写数�??
+        .addra(brom_rom_addr), // 地址输入
+        .dina(32'b0),  // 写数据输�??
+        .douta(rom_data)  // 读数据输�??
+    );
+    
+    Bram Ram_Bram (
+        .cpu_clk(cpu_clk),
+        .mem_clk(mem_clk),
+        .rst(rst),
+        .cache_ram_addr(I_Cache_rom_addr),
+        .cache_ram_data(I_Cache_rom_data),
+        .cache_ram_write(1'b0),
+        .cache_ram_valid(I_Cache_rom_valid),
+        .bram_ram_write(),
+        .bram_ram_addr(brom_rom_addr),
+        .bram_ram_data(),
+        .bram_valid(brom_valid)
+    );
+
+    Cache I_Cache (
+        .clk(cpu_clk),
+        .rst(rst),
+        .cache_req_addr(pc_out),
+        .cache_req_data(32'b0),
+        .cache_req_wen(1'b0),
+        .cache_req_valid(pc_access_memory_valid),
+        .cache_resp_data(inst),
+        .cache_resp_stall(I_cache_stall),
+        .mem_req_addr(I_Cache_rom_addr),
+        .mem_req_data(),
+        .mem_req_wen(),
+        .mem_req_valid(I_Cache_rom_valid),
+        .mem_resp_data(rom_data),
+        .mem_resp_valid(brom_valid)
     );
     
     // TODO: 连接Data Memory
     Ram ram_unit (
         .clka(mem_clk),  // 时钟
-        .wea(bram_ram_write),   // 是否写数�?
+        .wea(bram_ram_write),   // 是否写数�??
         .addra(bram_ram_addr), // 地址输入
-        .dina(bram_ram_data),  // 写数据输�?
-        .douta(ram_data)  // 读数据输�?
+        .dina(bram_ram_data),  // 写数据输�??
+        .douta(ram_data)  // 读数据输�??
     );
     
     Bram Ram_Bram (
