@@ -82,7 +82,7 @@ module Core(
         .douta(rom_data)  // 读数据输�??
     );
     
-    Bram Ram_Bram (
+    Bram Rom_Bram (
         .cpu_clk(cpu_clk),
         .mem_clk(mem_clk),
         .rst(rst),
@@ -114,7 +114,7 @@ module Core(
     );
     
     // TODO: 连接Data Memory
-    Ram ram_unit (
+    Data_Ram Data_Ram (
         .clka(mem_clk),  // 时钟
         .wea(bram_ram_write),   // 是否写数�??
         .addra(bram_ram_addr), // 地址输入
