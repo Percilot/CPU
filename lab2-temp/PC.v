@@ -23,40 +23,76 @@
 module PC(
 input clk,
 input rst,
+input [31:0] inst_in,
 input D_cache_stall,
+input I_cache_stall,
 input PC_lock,
 input write_PC,
 input [31:0] new_PC,
 output [31:0] PC_out,
-output ControlChange
+output ControlChange,
+output pc_access_mem_valid
     );
 
 reg [31:0] PC;
+reg valid;
 
-always @ (posedge clk or posedge rst or posedge PC_lock)
+always @ (posedge clk or posedge rst)
 begin
         if(rst)
         begin
             PC <= 32'b0;
-        end
-        else if(D_cache_stall)
-        begin
-            PC <= PC;
-        end
-        else if(PC_lock)
-        begin
-            PC <= PC;
-        end
-        else if(write_PC)
-        begin
-            PC <= new_PC;
+            valid <= 1'b1;
         end
         else
         begin
-            PC <= PC + 32'h4;
-        end
+            if(inst_in == 32'b0)
+            begin
+                PC <= PC;
+                valid <= 1'b0;
+            end
+            else if(D_cache_stall && I_cache_stall)
+            begin
+                PC <= PC;
+                valid <= 1'b0;
+            end
+            
+            else if(D_cache_stall && (!I_cache_stall))
+            begin
+                if(inst_in != 32'b0)
+                begin
+                    if(write_PC)
+                    begin
+                        PC <= new_PC;
+                        valid <= 1'b1;
+                    end
+                    else
+                    begin
+                        PC <= PC + 32'h4;
+                        valid <= 1'b1;
+                    end
+                 end
+            end
+            
+            else if(PC_lock)
+            begin
+                PC <= PC;
+                valid <= 1'b1;
+            end
+            else if(write_PC)
+            begin
+                PC <= new_PC;
+                valid <= 1'b1;
+            end
+            else
+            begin
+                PC <= PC + 32'h4;
+                valid <= 1'b1;
+            end
+         end
 end    
 
 assign PC_out = PC;
 assign ControlChange = write_PC;
+assign pc_access_mem_valid = valid;
 endmodule

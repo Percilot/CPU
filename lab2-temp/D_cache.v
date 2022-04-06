@@ -24,16 +24,16 @@ module Cache
 (
 input clk, 	//Pipeline 	Input 	1 	时钟信号
 input rst, 	//Pipeline 	Input 	1 	复位信号
-input [31:0] cache_req_addr, 	//Pipeline 	Input 	32 	流水线发出的读/写地址
+input [31:0] cache_req_addr, 	//Pipeline 	Input 	32 	流水线发出的�?/写地�?
 input [31:0] cache_req_data, 	//Pipeline 	Input 	32 	写入数据
-input cache_req_wen, 	//Pipeline 	Input 	1 	cache写使能
-input cache_req_valid, 	//Pipeline 	Input 	1 	发往cache的读写请求的有效性
-output reg [31:0] cache_resp_data, 	//Pipeline 	Output 	32 	向流水线提交的数据内容
+input cache_req_wen, 	//Pipeline 	Input 	1 	cache写使�?
+input cache_req_valid, 	//Pipeline 	Input 	1 	发往cache的读写请求的有效�?
+output reg [31:0] cache_resp_data, 	//Pipeline 	Output 	32 	向流水线提交的数据内�?
 output reg cache_resp_stall, 	//Pipeline 	Output 	1 	流水线是否需要继续Stall
-output reg [31:0] mem_req_addr, 	//Memory 	Output 	32 	发往Memory的读/写地址
+output reg [31:0] mem_req_addr, 	//Memory 	Output 	32 	发往Memory的读/写地�?
 output reg [31:0] mem_req_data, 	//Memory 	Output 	32 	发往Memory写入数据
-output reg mem_req_wen, 	//Memory 	Output 	1 	Memory写使能
-output reg mem_req_valid, 	//Memory 	Output 	1 	发往Memory的读写请求的有效性
+output reg mem_req_wen, 	//Memory 	Output 	1 	Memory写使�?
+output reg mem_req_valid, 	//Memory 	Output 	1 	发往Memory的读写请求的有效�?
 input [31:0] mem_resp_data, 	//Memory 	Input 	32 	内存返回数据
 input mem_resp_valid 	//Memory 	Input 	1 	Memory数据查询完成
 );
@@ -65,6 +65,12 @@ begin
         mem_write_back_data <= 32'b0;
         cache_write_back_addr <= 32'b0;
         cache_write_back_data <= 32'b0;
+        cache_resp_data <= 32'b0;
+        cache_resp_stall <= 1'b0;
+        mem_req_addr <= 32'b0;
+        mem_req_data <= 32'b0;
+        mem_req_wen <= 1'b0;
+        mem_req_valid <= 1'b0;
         cache_opeation <= 1'b0;
         for(l = 0; l < 128; l = l + 1)
             cache[l] <= 59'b0;

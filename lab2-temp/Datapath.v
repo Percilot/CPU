@@ -4,6 +4,7 @@ module Datapath(
 input clk,
 input rst,
 input D_cache_stall,
+input I_cache_stall,
 input [31:0] inst_in,
 input [31:0] data_in,
 output [31:0] addr_out,
@@ -11,7 +12,8 @@ output [31:0] data_out,
 output [31:0] pc_out,
 output [31:0] reg_out,
 output mem_write,
-output output_mem_access_out
+output output_mem_access_out,
+output pc_access_mem_valid
     );
     
 wire [31:0] Regs_RegisterRs1_Data, Regs_RegisterRs2_Data;
@@ -139,6 +141,7 @@ IF_ID SegmentReg1(
 .clk(clk),
 .rst(rst),
 .D_cache_stall(D_cache_stall),
+.I_cache_stall(I_cache_stall),
 .ControlChange(ControlChange),
 .PC_in(PC_PC),
 .inst_in(inst_in),
@@ -153,6 +156,7 @@ ID_EX SegmentReg2(
 .rst(rst),
 .IF_ID_inst_valid(IF_ID_inst_valid),
 .D_cache_stall(D_cache_stall),
+.I_cache_stall(I_cache_stall),
 .PC_in(IF_ID_PC),
 .imm_in(Inst_Imm),
 .read_data_1_in(Regs_RegisterRs1_Data),
@@ -205,6 +209,7 @@ EX_MEM SegmentReg3(
 .clk(clk),
 .rst(rst),
 .D_cache_stall(D_cache_stall),
+.I_cache_stall(I_cache_stall),
 .ALU_result_in(ALU_ALUresult),
 .read_data_2_in(ForwardingRs2),
 .PC_addimm_in(ADDER_PCaddImm),
@@ -239,6 +244,7 @@ MEM_WB SegmentReg4(
 .clk(clk),
 .rst(rst),
 .D_cache_stall(D_cache_stall),
+.I_cache_stall(I_cache_stall),
 .read_data_in(data_in),
 .ALU_result_in(EX_MEM_ALUresult),
 .mem_to_reg_in(EX_MEM_MemToReg),
@@ -367,12 +373,15 @@ Return_to_PC ReturnToPC(
 PC PC(
 .clk(clk),
 .rst(rst),
+.inst_in(inst_in),
 .D_cache_stall(D_cache_stall),
+.I_cache_stall(I_cache_stall),
 .PC_lock(PC_lock),
 .write_PC(write_PC),
 .new_PC(new_PC),
 .PC_out(PC_PC),
-.ControlChange(ControlChange)
+.ControlChange(ControlChange),
+.pc_access_mem_valid(pc_access_mem_valid)
 );
 
 ForwardingUnit ForwardingALUsrc(

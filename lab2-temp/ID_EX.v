@@ -25,6 +25,7 @@ input clk,
 input rst,
 input IF_ID_inst_valid,
 input D_cache_stall,
+input I_cache_stall,
 input [31:0] PC_in,
 input [31:0] imm_in,
 input [31:0] read_data_1_in,
@@ -110,7 +111,7 @@ begin
         mem_access_valid <= 1'b0;
     end
     
-    else if(D_cache_stall && !IF_ID_inst_valid)
+    else if((D_cache_stall && !IF_ID_inst_valid) || (I_cache_stall))
     begin
         PC <= PC;
         imm <= imm;
@@ -165,27 +166,27 @@ begin
     end
 end
 
-assign PC_out = (D_cache_stall == 1'b1) ? 32'b0 : PC;
-assign imm_out = (D_cache_stall == 1'b1) ? 32'b0 : imm;
-assign read_data_1_out = (D_cache_stall == 1'b1) ? 32'b0 : read_data_1;
-assign read_data_2_out = (D_cache_stall == 1'b1) ? 32'b0 : read_data_2;
-assign alu_src_b_out = (D_cache_stall == 1'b1) ? 1'b0 : alu_src_b;
-assign alu_src_a_out = (D_cache_stall == 1'b1) ? 1'b0 : alu_src_a;
-assign reg_write_out = (D_cache_stall == 1'b1) ? 1'b0 : reg_write;
-assign mem_write_out = (D_cache_stall == 1'b1) ? 1'b0 :mem_write;
-assign branch_out = (D_cache_stall == 1'b1) ? 1'b0 : branch;
-assign b_type_out = (D_cache_stall == 1'b1) ? 3'b0 : b_type;
-assign pc_src_out = (D_cache_stall == 1'b1) ? 2'b0 : pc_src;
-assign mem_to_reg_out = (D_cache_stall == 1'b1) ? 2'b0 : mem_to_reg;
-assign alu_op_out = (D_cache_stall == 1'b1) ? 4'b0 : alu_op;
-assign reg_write_addr_out = (D_cache_stall == 1'b1) ? 5'b0 : reg_write_addr;
-assign RegisterRs1_Index_out = (D_cache_stall == 1'b1) ? 5'b0 : RegisterRs1_Index;
-assign RegisterRs2_Index_out = (D_cache_stall == 1'b1) ? 5'b0 : RegisterRs2_Index;
-assign CSRSource_out = (D_cache_stall == 1'b1) ? 1'b0 : CSRSource;
-assign Read_CSR_Data_out = (D_cache_stall == 1'b1) ? 32'b0 : Read_CSR_Data;
-assign WriteCSR_Addr_out = (D_cache_stall == 1'b1) ? 12'b0 : WriteCSR_Addr;
-assign WriteCSR_out = (D_cache_stall == 1'b1) ? 1'b0 : WriteCSR;
-assign CSR_WriteSource_out = (D_cache_stall == 1'b1) ? 2'b0 : CSR_WriteSource;
-assign CSR_HowToWriteCSR_out = (D_cache_stall == 1'b1) ? 2'b0 : CSR_HowToWriteCSR;
-assign mem_access_valid_out = (D_cache_stall == 1'b1) ? 1'b0 : mem_access_valid;
+assign PC_out = (D_cache_stall && I_cache_stall) ? 32'b0 : PC;
+assign imm_out = (D_cache_stall && I_cache_stall) ? 32'b0 : imm;
+assign read_data_1_out = (D_cache_stall && I_cache_stall) ? 32'b0 : read_data_1;
+assign read_data_2_out = (D_cache_stall && I_cache_stall) ? 32'b0 : read_data_2;
+assign alu_src_b_out = (D_cache_stall && I_cache_stall) ? 1'b0 : alu_src_b;
+assign alu_src_a_out = (D_cache_stall && I_cache_stall) ? 1'b0 : alu_src_a;
+assign reg_write_out = (D_cache_stall && I_cache_stall) ? 1'b0 : reg_write;
+assign mem_write_out = (D_cache_stall && I_cache_stall) ? 1'b0 :mem_write;
+assign branch_out = (D_cache_stall && I_cache_stall) ? 1'b0 : branch;
+assign b_type_out = (D_cache_stall && I_cache_stall) ? 3'b0 : b_type;
+assign pc_src_out = (D_cache_stall && I_cache_stall) ? 2'b0 : pc_src;
+assign mem_to_reg_out = (D_cache_stall && I_cache_stall) ? 2'b0 : mem_to_reg;
+assign alu_op_out = (D_cache_stall && I_cache_stall) ? 4'b0 : alu_op;
+assign reg_write_addr_out = (D_cache_stall && I_cache_stall) ? 5'b0 : reg_write_addr;
+assign RegisterRs1_Index_out = (D_cache_stall && I_cache_stall) ? 5'b0 : RegisterRs1_Index;
+assign RegisterRs2_Index_out = (D_cache_stall && I_cache_stall) ? 5'b0 : RegisterRs2_Index;
+assign CSRSource_out = (D_cache_stall && I_cache_stall) ? 1'b0 : CSRSource;
+assign Read_CSR_Data_out = (D_cache_stall && I_cache_stall) ? 32'b0 : Read_CSR_Data;
+assign WriteCSR_Addr_out = (D_cache_stall && I_cache_stall) ? 12'b0 : WriteCSR_Addr;
+assign WriteCSR_out = (D_cache_stall && I_cache_stall) ? 1'b0 : WriteCSR;
+assign CSR_WriteSource_out = (D_cache_stall && I_cache_stall) ? 2'b0 : CSR_WriteSource;
+assign CSR_HowToWriteCSR_out = (D_cache_stall && I_cache_stall) ? 2'b0 : CSR_HowToWriteCSR;
+assign mem_access_valid_out = (D_cache_stall && I_cache_stall) ? 1'b0 : mem_access_valid;
 endmodule

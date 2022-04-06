@@ -24,6 +24,7 @@ module IF_ID(
 input clk,
 input rst,
 input D_cache_stall,
+input I_cache_stall,
 input ControlChange,
 input [31:0] PC_in,
 input [31:0] inst_in,
@@ -47,7 +48,7 @@ begin
         PC_lock <= 1'b0;
     end
 
-    else if(D_cache_stall)
+    else if(D_cache_stall || I_cache_stall)
     begin
         PC_out <= 32'b0;
         inst_out <= 32'h00000013;

@@ -24,6 +24,7 @@ module MEM_WB(
 input clk,
 input rst,
 input D_cache_stall,
+input I_cache_stall,
 input [31:0] read_data_in,
 input [31:0] ALU_result_in,
 input [1:0] mem_to_reg_in,
@@ -58,9 +59,12 @@ begin
         PC_add4 <= 32'b0;
     end
     
-    else if(D_cache_stall)
+    else if(D_cache_stall || I_cache_stall)
     begin
-        read_data <= read_data_in;
+        if(read_data_in == 32'b0)
+            read_data <= read_data;
+        else
+            read_data <= read_data_in;
         ALU_result <= ALU_result;
         imm <= imm;
         mem_to_reg <= mem_to_reg;
@@ -81,12 +85,12 @@ begin
     end
 end    
 
-assign read_data_out = (D_cache_stall == 1'b1) ? 32'b0 : read_data_in;
-assign ALU_result_out = (D_cache_stall == 1'b1) ? 32'b0 : ALU_result;
-assign imm_out = (D_cache_stall == 1'b1)? 32'b0 : imm;
-assign mem_to_reg_out = (D_cache_stall == 1'b1) ? 2'b0 : mem_to_reg;
-assign reg_write_out = (D_cache_stall == 1'b1) ? 1'b0 : reg_write;
-assign reg_write_addr_out = (D_cache_stall == 1'b1) ? 5'b0 : reg_write_addr;
-assign PC_add4_out = (D_cache_stall == 1'b1) ? 32'b0 : PC_add4;
+assign read_data_out = (read_data_in == 32'b0) ? read_data : read_data_in;
+assign ALU_result_out = (D_cache_stall) ? 32'b0 : ALU_result;
+assign imm_out = (D_cache_stall)? 32'b0 : imm;
+assign mem_to_reg_out = (D_cache_stall) ? 2'b0 : mem_to_reg;
+assign reg_write_out = (D_cache_stall) ? 1'b0 : reg_write;
+assign reg_write_addr_out = (D_cache_stall) ? 5'b0 : reg_write_addr;
+assign PC_add4_out = (D_cache_stall) ? 32'b0 : PC_add4;
     
 endmodule

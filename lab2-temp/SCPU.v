@@ -24,6 +24,7 @@ module SCPU(
     input         clk,
     input         rst,
     input         D_cache_stall,
+    input         I_cache_stall,
     input  [31:0] inst,
     input  [31:0] data_in,  // data from data memory
     output [31:0] addr_out, // data memory address
@@ -31,13 +32,15 @@ module SCPU(
     output [31:0] pc_out,   // connect to instruction memory
     output [31:0] reg_out,
     output        mem_write,
-    output        mem_access_valid
+    output        mem_access_valid,
+    output        pc_access_mem_valid
     );
 
     Datapath datapath (
         .clk(clk),
         .rst(rst),
         .D_cache_stall(D_cache_stall),
+        .I_cache_stall(I_cache_stall),
         .inst_in(inst),
         .data_in(data_in),
         .addr_out(addr_out),
@@ -45,7 +48,8 @@ module SCPU(
         .pc_out(pc_out),
         .reg_out(reg_out),
         .mem_write(mem_write),
-        .output_mem_access_out(mem_access_valid)
+        .output_mem_access_out(mem_access_valid),
+        .pc_access_mem_valid(pc_access_mem_valid)
     );
     
 endmodule
