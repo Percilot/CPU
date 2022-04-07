@@ -23,6 +23,7 @@
 module Registers(
 input clk,
 input rst,
+input [4:0] debug_reg_addr,
 input we,
 input [4:0] read_addr_1,
 input [4:0] read_addr_2,
@@ -38,7 +39,7 @@ reg [31:0] register [1:31];
 
 assign read_data_1 = (read_addr_1 == 0) ? 0 : register[read_addr_1];
 assign read_data_2 = (read_addr_2 == 0) ? 0 : register[read_addr_2];
-assign reg_out = register[3];
+assign reg_out = register[debug_reg_addr];
 
 always @ (negedge clk or posedge rst)
 begin

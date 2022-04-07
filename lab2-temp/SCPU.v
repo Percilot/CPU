@@ -23,6 +23,7 @@
 module SCPU(
     input         clk,
     input         rst,
+    input  [4:0]  debug_reg_addr,
     input         D_cache_stall,
     input         I_cache_stall,
     input  [31:0] inst,
@@ -39,6 +40,7 @@ module SCPU(
     Datapath datapath (
         .clk(clk),
         .rst(rst),
+        .debug_reg_addr(debug_reg_addr),
         .D_cache_stall(D_cache_stall),
         .I_cache_stall(I_cache_stall),
         .inst_in(inst),

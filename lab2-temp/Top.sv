@@ -50,7 +50,7 @@ module Top(
         .aresetn(aresetn),
         .step(step),
         .debug_mode(switch[15]),
-        // .debug_reg_addr(switch[11:7]),
+        .debug_reg_addr(switch[11:7]),
         .address(address),
         .data_out(data_out),
         .data_in(data_in),

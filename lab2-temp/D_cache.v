@@ -35,7 +35,8 @@ output reg [31:0] mem_req_data, 	//Memory 	Output 	32 	发往Memory写入数据
 output reg mem_req_wen, 	//Memory 	Output 	1 	Memory写使�?
 output reg mem_req_valid, 	//Memory 	Output 	1 	发往Memory的读写请求的有效�?
 input [31:0] mem_resp_data, 	//Memory 	Input 	32 	内存返回数据
-input mem_resp_valid 	//Memory 	Input 	1 	Memory数据查询完成
+input mem_resp_valid, 	//Memory 	Input 	1 	Memory数据查询完成
+output [31:0] cache_state_output
 );
 
 integer l;
@@ -275,5 +276,5 @@ begin
     end
 
 end
-
+assign cache_state_output = {29'b0, cache_state};
 endmodule

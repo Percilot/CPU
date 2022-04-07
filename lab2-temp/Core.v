@@ -25,7 +25,7 @@ module Core(
     input  wire        aresetn,
     input  wire        step,
     input  wire        debug_mode,
-    // input  wire [4:0]  debug_reg_addr, // register address
+    input  wire [4:0]  debug_reg_addr, // register address
 
     output wire [31:0] address,
     output wire [31:0] data_out,
@@ -52,11 +52,14 @@ module Core(
     wire I_cache_stall, I_Cache_rom_valid;
     wire [31:0] brom_rom_addr, rom_data;
     wire brom_valid;
+    
+    wire [31:0] I_cache_state;
     assign rst = ~aresetn;
 
     SCPU cpu(
         .clk(cpu_clk),
         .rst(rst),
+        .debug_reg_addr(debug_reg_addr),
         .D_cache_stall(D_cache_stall),
         .I_cache_stall(I_cache_stall),
         .inst(inst),
@@ -74,7 +77,7 @@ module Core(
         if(rst) clk_div <= 0;
         else clk_div <= clk_div + 1;
     end
-    assign mem_clk = ~clk_div[3]; // 50mhz
+    assign mem_clk = clk_div[3]; // 50mhz
     assign cpu_clk = debug_mode ? clk_div[0] : step;
     
     // TODO: 连接Instruction Memory
@@ -119,7 +122,8 @@ module Core(
         .mem_req_wen(),
         .mem_req_valid(I_Cache_rom_valid),
         .mem_resp_data(rom_data),
-        .mem_resp_valid(brom_valid)
+        .mem_resp_valid(brom_valid),
+        .cache_state_output(I_cache_state)
     );
     
     // TODO: 连接Data Memory
@@ -166,5 +170,5 @@ module Core(
     assign chip_debug_out0 = pc_out <<< 2;
     assign chip_debug_out1 = addr_out;
     assign chip_debug_out2 = inst;
-    assign chip_debug_out3 = reg_out;
+    assign chip_debug_out3 = I_cache_state;
 endmodule

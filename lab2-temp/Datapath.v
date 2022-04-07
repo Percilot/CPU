@@ -3,6 +3,7 @@
 module Datapath(
 input clk,
 input rst,
+input [4:0] debug_reg_addr,
 input D_cache_stall,
 input I_cache_stall,
 input [31:0] inst_in,
@@ -293,6 +294,7 @@ Control Control(
 Registers UniversalReg(
 .clk(clk),
 .rst(rst),
+.debug_reg_addr(debug_reg_addr),
 .we(MEM_WB_RegWrite),
 .read_addr_1(Control_RegisterRs1_Index),
 .read_addr_2(Control_RegisterRs2_Index),
