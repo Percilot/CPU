@@ -52,8 +52,6 @@ module Core(
     wire I_cache_stall, I_Cache_rom_valid;
     wire [31:0] brom_rom_addr, rom_data;
     wire brom_valid;
-    
-    wire [31:0] I_cache_state;
     assign rst = ~aresetn;
 
     SCPU cpu(
@@ -77,7 +75,7 @@ module Core(
         if(rst) clk_div <= 0;
         else clk_div <= clk_div + 1;
     end
-    assign mem_clk = clk_div[3]; // 50mhz
+    assign mem_clk = ~clk_div[3]; // 50mhz
     assign cpu_clk = debug_mode ? clk_div[0] : step;
     
     // TODO: 连接Instruction Memory
@@ -89,22 +87,15 @@ module Core(
     Inst_Ram Inst_Ram (
         .clka(mem_clk),  // 时钟
         .wea(1'b0),   // 是否写数�??
-        .addra(brom_rom_addr), // 地址输入
+        .addra(I_Cache_rom_addr), // 地址输入
         .dina(32'b0),  // 写数据输�??
         .douta(rom_data)  // 读数据输�??
     );
     
     Bram Rom_Bram (
         .cpu_clk(cpu_clk),
-        .mem_clk(mem_clk),
         .rst(rst),
-        .cache_ram_addr(I_Cache_rom_addr),
-        .cache_ram_data(32'b0),
-        .cache_ram_write(1'b0),
         .cache_ram_valid(I_Cache_rom_valid),
-        .bram_ram_write(),
-        .bram_ram_addr(brom_rom_addr),
-        .bram_ram_data(),
         .bram_valid(brom_valid)
     );
 
@@ -122,30 +113,22 @@ module Core(
         .mem_req_wen(),
         .mem_req_valid(I_Cache_rom_valid),
         .mem_resp_data(rom_data),
-        .mem_resp_valid(brom_valid),
-        .cache_state_output(I_cache_state)
+        .mem_resp_valid(brom_valid)
     );
     
     // TODO: 连接Data Memory
     Data_Ram Data_Ram (
         .clka(mem_clk),  // 时钟
-        .wea(bram_ram_write),   // 是否写数�??
-        .addra(bram_ram_addr), // 地址输入
-        .dina(bram_ram_data),  // 写数据输�??
+        .wea(D_Cache_ram_write),   // 是否写数�??
+        .addra(D_Cache_ram_addr), // 地址输入
+        .dina(D_Cache_ram_data),  // 写数据输�??
         .douta(ram_data)  // 读数据输�??
     );
     
     Bram Ram_Bram (
         .cpu_clk(cpu_clk),
-        .mem_clk(mem_clk),
         .rst(rst),
-        .cache_ram_addr(D_Cache_ram_addr),
-        .cache_ram_data(D_Cache_ram_data),
-        .cache_ram_write(D_Cache_ram_write),
         .cache_ram_valid(D_Cache_ram_valid),
-        .bram_ram_write(bram_ram_write),
-        .bram_ram_addr(bram_ram_addr),
-        .bram_ram_data(bram_ram_data),
         .bram_valid(bram_valid)
     );
 
@@ -170,5 +153,5 @@ module Core(
     assign chip_debug_out0 = pc_out <<< 2;
     assign chip_debug_out1 = addr_out;
     assign chip_debug_out2 = inst;
-    assign chip_debug_out3 = I_cache_state;
+    assign chip_debug_out3 = reg_out;
 endmodule
